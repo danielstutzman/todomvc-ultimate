@@ -24,9 +24,14 @@
     "grunt-newer": "~0.6.0",
     "grunt-svgmin": "~0.2.0",
     "grunt-concurrent": "~0.4.0",
+    "grunt-browserify": "~1.3.0",
     "load-grunt-tasks": "~0.2.0",
     "time-grunt": "~0.2.0",
-    "jshint-stylish": "~0.1.3"
+    "jshint-stylish": "~0.1.3",
+    "coffeeify": "~0.5.2",
+    "uglifyify": "https://github.com/danielstutzman/uglifyify/tarball/1212d4f0ac8f205209a632444affbedfad74cb0a",
+    "exorcist": "~0.1.5",
+    "grunt-shell": "~0.6.4"
   },
   "engines": {
     "node": ">=0.8.0"

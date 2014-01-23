@@ -27,6 +27,13 @@ module.exports = function (grunt) {
 
         // Watches files for changes and runs tasks based on the changed files
         watch: {
+            coffee: {
+                files: ['<%= yeoman.app %>/scripts/{,*/}*.coffee'],
+                tasks: ['browserify'],
+                options: {
+                    livereload: true
+                }
+            },
             js: {
                 files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
                 tasks: ['jshint'],
@@ -337,17 +344,46 @@ module.exports = function (grunt) {
         concurrent: {
             server: [
                 'compass:server',
-                'copy:styles'
+                'copy:styles',
+                'browserify'
             ],
             test: [
-                'copy:styles'
+                'copy:styles',
+                'browserify'
             ],
             dist: [
                 'compass',
                 'copy:styles',
                 'imagemin',
-                'svgmin'
+                'svgmin',
+                'browserify'
             ]
+        },
+
+        browserify: {
+            dist: {
+                files: {
+                    '.tmp/scripts/module.js': [
+                        'app/scripts/*.js',
+                        'app/scripts/*.coffee'
+                    ]
+                }
+            },
+            options: {
+                debug: true,
+                transform: ['coffeeify', 'uglifyify']
+            }
+        },
+
+        shell: {
+            exorcist: {
+                command: 'mv .tmp/scripts/module.js .tmp/scripts/module2.js && cat .tmp/scripts/module2.js | node_modules/.bin/exorcist .tmp/scripts/module.js.sourcemap > .tmp/scripts/module.js',
+                options: {
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            }
         }
     });
 
@@ -388,6 +424,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'clean:dist',
+        'browserify',
         'useminPrepare',
         'concurrent:dist',
         'autoprefixer',
@@ -398,7 +435,8 @@ module.exports = function (grunt) {
         'modernizr',
         'rev',
         'usemin',
-        'htmlmin'
+        'htmlmin',
+        'shell:exorcist'
     ]);
 
     grunt.registerTask('default', [
