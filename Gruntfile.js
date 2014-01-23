@@ -29,9 +29,10 @@ module.exports = function (grunt) {
         watch: {
             coffee: {
                 files: ['<%= yeoman.app %>/scripts/{,*/}*.coffee'],
-                tasks: ['browserify'],
+                tasks: ['browserify:dev'],
                 options: {
-                    livereload: true
+                    livereload: true,
+                    spawn: false
                 }
             },
             js: {
@@ -345,39 +346,50 @@ module.exports = function (grunt) {
             server: [
                 'compass:server',
                 'copy:styles',
-                'browserify'
+                'browserify:dev'
             ],
             test: [
                 'copy:styles',
-                'browserify'
+                'browserify:dist'
             ],
             dist: [
                 'compass',
                 'copy:styles',
                 'imagemin',
-                'svgmin',
-                'browserify'
+                'svgmin'
             ]
         },
 
         browserify: {
+            dev: {
+                files: {
+                    '.tmp/scripts/module.js': [
+                        'app/scripts/*.js',
+                        'app/scripts/*.coffee'
+                    ]
+                },
+                options: {
+                    debug: true,
+                    transform: ['coffeeify']
+                }
+            },
             dist: {
                 files: {
                     '.tmp/scripts/module.js': [
                         'app/scripts/*.js',
                         'app/scripts/*.coffee'
                     ]
+                },
+                options: {
+                    debug: true,
+                    transform: ['coffeeify', 'uglifyify']
                 }
             },
-            options: {
-                debug: true,
-                transform: ['coffeeify', 'uglifyify']
-            }
         },
 
         shell: {
             exorcist: {
-                command: 'mv .tmp/scripts/module.js .tmp/scripts/module2.js && cat .tmp/scripts/module2.js | node_modules/.bin/exorcist .tmp/scripts/module.js.sourcemap > .tmp/scripts/module.js',
+                command: 'mv .tmp/concat/scripts/module2.js .tmp/concat/scripts/module3.js && cat .tmp/concat/scripts/module3.js | node_modules/.bin/exorcist dist/scripts/module.js.sourcemap > dist/scripts/module2.js',
                 options: {
                     stdout: true,
                     stderr: true,
@@ -424,7 +436,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'clean:dist',
-        'browserify',
+        'browserify:dist',
         'useminPrepare',
         'concurrent:dist',
         'autoprefixer',
@@ -432,11 +444,11 @@ module.exports = function (grunt) {
         'cssmin',
         'uglify',
         'copy:dist',
+        'shell:exorcist',
         'modernizr',
         'rev',
         'usemin',
-        'htmlmin',
-        'shell:exorcist'
+        'htmlmin'
     ]);
 
     grunt.registerTask('default', [
