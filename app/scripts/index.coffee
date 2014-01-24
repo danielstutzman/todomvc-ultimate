@@ -1,3 +1,3 @@
-square = require('./square.coffee')
-
-console.log(square(125)) # => 15625
+app = require('./app.coffee')
+jQuery ($) ->
+  app.init()
