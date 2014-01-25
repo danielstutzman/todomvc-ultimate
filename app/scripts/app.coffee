@@ -54,12 +54,14 @@ App =
     isChecked = $(this).prop("checked")
     $.each App.todos, (i, val) ->
       val.completed = isChecked
+      true # don't break loop
     App.render()
 
   activeTodoCount: ->
     count = 0
     $.each @todos, (i, val) ->
       count++  unless val.completed
+      true # don't break loop
     count
 
   destroyCompleted: ->
@@ -76,11 +78,12 @@ App =
       if val.id is id
         callback.apply App, arguments
         false
+      true # don't break loop
 
   create: (e) ->
     $input = $(this)
     val = $.trim($input.val())
-    return  if e.which isnt App.ENTER_KEY or not val
+    return if e.which isnt App.ENTER_KEY or not val
     App.todos.push
       id: Utils.uuid()
       title: val
