@@ -23,7 +23,7 @@ App =
 
   bindEvents: ->
     list = @$todoList
-    @$newTodo.on "keyup", @create
+    @$newTodo.on "keypress", @create
     @$toggleAll.on "change", @toggleAll
     @$footer.on "click", "#clear-completed", @destroyCompleted
     list.on "change", ".toggle", @toggle
